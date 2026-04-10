@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -13,23 +13,30 @@ class AuthController extends Controller
         // VALIDASI
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        // CEK USER
         $user = User::where('email', $request->email)->first();
 
-        // CEK PASSWORD
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Email atau password salah'
+                'message' => 'Email atau password salah',
             ], 401);
         }
 
-        // SUCCESS
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'message' => 'Login berhasil',
-            'user' => $user
+            'token' => $token,
+            'user' => $user,
+        ]);
+    }
+
+    public function me(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user(),
         ]);
     }
 }
