@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 class Obat extends Model
 {
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -15,7 +16,8 @@ class Obat extends Model
         'nama',
         'tipe',
         'stok',
-        'harga'
+        'harga',
+        'distributor_id'
     ];
 
     protected static function boot()
@@ -23,9 +25,14 @@ class Obat extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->id) {
+            if (! $model->id) {
                 $model->id = (string) Str::uuid();
             }
         });
+    }
+
+    public function distributor()
+    {
+        return $this->belongsTo(Distributor::class);
     }
 }

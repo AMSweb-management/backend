@@ -9,7 +9,9 @@ class ObatController extends Controller
 {
     public function index()
     {
-        return Obat::latest()->get();
+        return response()->json(
+            Obat::with('distributor')->paginate(10)
+        );
     }
 
     public function store(Request $request)
@@ -19,9 +21,11 @@ class ObatController extends Controller
             'tipe' => 'required',
             'stok' => 'required|integer',
             'harga' => 'required|numeric',
+            'distributor_id' => 'nullable|exists:distributors,id',
         ]);
 
         $obat = Obat::create($request->all());
+        Obat::with('distributor')->get();
 
         return response()->json([
             'message' => 'Obat berhasil ditambahkan',
@@ -43,8 +47,10 @@ class ObatController extends Controller
             'tipe' => 'required',
             'stok' => 'required|integer',
             'harga' => 'required|numeric',
+            'distributor_id' => 'nullable|exists:distributors,id',
         ]);
-
+        
+        Obat::with('distributor')->findOrFail($id);
         $obat->update($request->all());
 
         return response()->json([
