@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Distributor;
+use Illuminate\Database\Seeder;
 
 class DistributorSeeder extends Seeder
 {
@@ -22,7 +22,10 @@ class DistributorSeeder extends Seeder
         ];
 
         foreach ($data as $item) {
-            Distributor::create($item);
+            Distributor::updateOrCreate(
+                ['nama' => $item['nama']],
+                $item
+            );
         }
     }
 }

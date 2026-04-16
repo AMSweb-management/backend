@@ -36,6 +36,8 @@ jobs:
               echo '🧱 Migrate DB' &&
               php artisan migrate --force &&
 
+              php artisan db:seed --force &&
+
               echo '⚡ Optimize cache' &&
               php artisan config:cache &&
               php artisan route:cache &&
