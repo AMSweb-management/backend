@@ -61,7 +61,7 @@ class NotificationController extends Controller
             ->update(['is_read' => true]);
 
         return response()->json([
-            'message' => 'Semua notifikasi ditandai sudah dibaca',
+            'message' => 'Semua notifikasi ditandai sudah ',
         ]);
     }
 }
