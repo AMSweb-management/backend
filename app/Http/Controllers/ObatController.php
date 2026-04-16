@@ -22,6 +22,7 @@ class ObatController extends Controller
             'stok' => 'required|integer',
             'harga' => 'required|numeric',
             'distributor_id' => 'nullable|exists:distributors,id',
+            'expired_date' => 'nullable|date',
         ]);
 
         $obat = Obat::create($request->all());
@@ -48,6 +49,7 @@ class ObatController extends Controller
             'stok' => 'required|integer',
             'harga' => 'required|numeric',
             'distributor_id' => 'nullable|exists:distributors,id',
+            'expired_date' => 'nullable|date',
         ]);
         
         Obat::with('distributor')->findOrFail($id);

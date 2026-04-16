@@ -17,7 +17,12 @@ class Obat extends Model
         'tipe',
         'stok',
         'harga',
-        'distributor_id'
+        'distributor_id',
+        'expired_date',
+    ];
+
+    protected $casts = [
+        'expired_date' => 'date',
     ];
 
     protected static function boot()
