@@ -22,8 +22,9 @@ jobs:
           script: |
             echo "🚀 START DEPLOY BACKEND"
 
-            # 🔥 LANGSUNG MASUK CONTAINER
             docker exec -i laravel_app bash -c "
+              set -e
+
               cd /var/www &&
 
               echo '📥 Pull latest code' &&
@@ -34,9 +35,10 @@ jobs:
               composer install --no-dev --optimize-autoloader &&
 
               echo '🧱 Migrate DB' &&
-              php artisan migrate --force &&
+              php artisan migrate --force || exit 1 &&
 
-              php artisan db:seed --force &&
+              echo '🌱 Seeding DB' &&
+              php artisan db:seed --force || exit 1 &&
 
               echo '⚡ Optimize cache' &&
               php artisan config:cache &&
