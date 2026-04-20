@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy backend via SSH
+      - name: 🚀 Deploy backend via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -34,19 +34,21 @@ jobs:
               echo '📦 Install dependency' &&
               composer install --no-dev --optimize-autoloader &&
 
-              echo '🧱 Migrate DB' &&
-              php artisan migrate --force || exit 1 &&
-
-              echo '🌱 Seeding DB' &&
-              php artisan db:seed --force || exit 1 &&
-
-              echo '⚡ Optimize cache' &&
-              php artisan config:cache &&
-              php artisan route:cache &&
+              echo '🧹 Clear old cache (PENTING)' &&
+              php artisan config:clear &&
+              php artisan cache:clear &&
+              php artisan route:clear &&
               php artisan view:clear &&
-              php artisan cache:clear
+
+              echo '🧱 Run migration' &&
+              php artisan migrate --force &&
+
+              echo '🌱 Run seeder (opsional tapi aman)' &&
+              php artisan db:seed --force &&
+
+              echo '⚡ Cache ulang config (BIAR CEPAT)' &&
+              php artisan config:cache &&
+              php artisan route:cache
             "
-            echo "🔄 Restart container"
-            docker restart laravel_app
 
             echo "✅ BACKEND DEPLOY DONE"
