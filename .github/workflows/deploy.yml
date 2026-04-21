@@ -43,9 +43,6 @@ jobs:
               echo '🧱 Run migration' &&
               php artisan migrate --force &&
 
-              echo '🌱 Run seeder (opsional tapi aman)' &&
-              php artisan db:seed --force &&
-
               echo '⚡ Cache ulang config (BIAR CEPAT)' &&
               php artisan config:cache &&
               php artisan route:cache
