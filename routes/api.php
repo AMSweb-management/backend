@@ -9,6 +9,9 @@ use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DistributorController;
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
 
 Route::apiResource('distributor', DistributorController::class);
 Route::post('/login', [AuthController::class, 'login']);
