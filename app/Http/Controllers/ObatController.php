@@ -19,8 +19,8 @@ class ObatController extends Controller
         $request->validate([
             'nama' => 'required',
             'tipe' => 'required',
-            'stok' => 'required|integer',
-            'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+            'harga' => 'required|numeric|min:0',
             'distributor_id' => 'nullable|exists:distributors,id',
             'expired_date' => 'nullable|date',
         ]);
@@ -46,8 +46,8 @@ class ObatController extends Controller
         $request->validate([
             'nama' => 'required',
             'tipe' => 'required',
-            'stok' => 'required|integer',
-            'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+            'harga' => 'required|numeric|min:0',
             'distributor_id' => 'nullable|exists:distributors,id',
             'expired_date' => 'nullable|date',
         ]);

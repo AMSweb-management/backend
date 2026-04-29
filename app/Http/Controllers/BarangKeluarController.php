@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BarangKeluar;
 use App\Models\Obat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class BarangKeluarController extends Controller
 {
@@ -17,24 +19,44 @@ class BarangKeluarController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'obat_id' => 'required',
-            'jumlah' => 'required|integer',
+        $validated = $request->validate([
+            'obat_id' => 'required|exists:obats,id',
+            'jumlah' => 'required|integer|min:1',
+            'tanggal' => 'nullable|date',
         ]);
 
-        $obat = Obat::findOrFail($request->obat_id);
+        $data = DB::transaction(function () use ($validated) {
+            $obat = Obat::query()
+                ->lockForUpdate()
+                ->findOrFail($validated['obat_id']);
 
-        $total = $request->jumlah * $obat->harga;
+            $stokSaatIni = (int) $obat->stok;
+            $jumlahKeluar = (int) $validated['jumlah'];
 
-        $data = BarangKeluar::create([
-            'obat_id' => $request->obat_id,
-            'jumlah' => $request->jumlah,
-            'tanggal' => now(),
-            'total' => $total,
-        ]);
+            if ($stokSaatIni <= 0) {
+                throw ValidationException::withMessages([
+                    'jumlah' => ['Stok obat sudah habis. Barang keluar tidak dapat diproses.'],
+                ]);
+            }
 
-        // 🔥 kurangi stok
-        $obat->decrement('stok', $request->jumlah);
+            if ($jumlahKeluar > $stokSaatIni) {
+                throw ValidationException::withMessages([
+                    'jumlah' => ["Jumlah barang keluar melebihi stok tersedia. Stok saat ini: {$stokSaatIni}."],
+                ]);
+            }
+
+            $data = BarangKeluar::create([
+                'obat_id' => $validated['obat_id'],
+                'jumlah' => $jumlahKeluar,
+                'tanggal' => $validated['tanggal'] ?? now(),
+                'total' => $jumlahKeluar * $obat->harga,
+            ]);
+
+            $obat->stok = max(0, $stokSaatIni - $jumlahKeluar);
+            $obat->save();
+
+            return $data;
+        });
 
         return response()->json([
             'message' => 'Berhasil',
