@@ -10,7 +10,7 @@ class ObatController extends Controller
     public function index()
     {
         return response()->json(
-            Obat::with('distributor')->paginate(10)
+            Obat::with('distributor')->latest()->get()
         );
     }
 

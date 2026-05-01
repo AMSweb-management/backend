@@ -14,7 +14,7 @@ class BarangKeluarController extends Controller
     {
         return BarangKeluar::with('obat')
             ->latest()
-            ->paginate(5);
+            ->get();
     }
 
     public function store(Request $request)
